@@ -7,6 +7,7 @@ from module.Url import Url
 
 image_list = multiprocessing.Manager().list()
 danbooru = ""
+nsfw_filter = ""
 
 
 def check_link(link, tags):
@@ -59,7 +60,14 @@ def sanitize_tags(tags):
 
 def generate_link(tags):
     global danbooru
-    return danbooru + "/posts?tags=" + tags
+    global nsfw_filter
+    link = danbooru + "/posts?tags=" + tags
+    if nsfw_filter == "nsfw":
+        rating = " rating:explicit"
+        rating = urllib.parse.quote(rating)
+        link = link + rating
+
+    return link
 
 
 def generate_post_link(post_id):
@@ -154,21 +162,24 @@ def convert_list_to_set():
 def main():
     global image_list
     global danbooru
+    global nsfw_filter
 
     print("Input tags: ", end="")
     tags = input()
     print("Input page: ", end="")
     pages = int(input())
-    print("Only download sfw[y/n]: ", end="")
-    sfw = input()
+    while True:
+        print("NSFW Filter[sfw|normal|nsfw]: ", end="")
+        nsfw_filter = input()
+        if nsfw_filter in ['sfw', 'normal', 'nsfw']:
+            break
 
-    if sfw == "y":
+    if nsfw_filter == "sfw":
         danbooru = "https://safebooru.donmai.us"
     else:
         danbooru = "https://danbooru.donmai.us"
 
     tags = sanitize_tags(tags)
-    directory = create_directory(tags)
     link = generate_link(tags)
     url = Url(link)
     pages = min(pages, get_max_page(url))
@@ -180,6 +191,11 @@ def main():
         get_image_from_page(tags, link, page)
 
     image_sets = convert_list_to_set()
+    if len(image_sets) == 0:
+        print("Can't find any image")
+        exit()
+
+    directory = create_directory(tags)
 
     print("Found total of %d image(s)" % len(image_list))
     print("Downloading image...")
