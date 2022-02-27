@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 class Url:
     def __init__(self, url):
         self._url = url
+        print(self._url)
         response = requests.get(url)
         self._soup = BeautifulSoup(response.content, 'html.parser')
 
