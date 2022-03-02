@@ -24,9 +24,6 @@ def check_link(link, tags):
 
 
 def check_tags(tags):
-    if tags == "" or len(tags) == 0:
-        print("Tags Cannot Be Empty")
-
     return tags != ""
 
 

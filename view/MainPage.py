@@ -18,6 +18,8 @@ class MainPage:
         self._max_page_field = None
         self._maximal_page_label = None
 
+        self._warning_box = None
+
         self.danbooru = None
         self.filter = "All"
 
@@ -37,6 +39,7 @@ class MainPage:
         self._maximal_page()
         self._page_component()
         self._download_button()
+        self._warning_box_init()
 
     def _tags_components(self):
         # tags label
@@ -110,9 +113,29 @@ class MainPage:
         download_btn.configure(borderwidth=5, relief=tk.FLAT)
         download_btn.pack(anchor="e", side="bottom", padx=25, pady=25)
 
+    def _warning_box_init(self):
+        self._warning_box = tk.Text(self.root, pady=5, padx=5)
+        self._warning_box.config(borderwidth=3, relief=tk.FLAT)
+        self._warning_box.config(bg=Color.WHITE, font="Helvetica 14")
+        self._warning_box.config(state="disabled")
+        self._warning_box.pack(side="bottom", anchor="center", padx=25, pady=(10, 15))
+
+        self._warning_box.tag_config('warning', foreground=Color.RED)
+        self._warning_box.tag_config('normal', foreground=Color.BLACK)
+
+    def _insert_log(self, text, tag):
+        text = "Warning: " + text + '\n'
+        self._warning_box.config(state="normal")
+        self._warning_box.insert('end', text, tag)
+        self._warning_box.config(state="disabled")
+
+    def _clear_log(self):
+        self._warning_box.delete('1.0', tk.END)
+
     def _init_danbooru(self, _tags_input):
         tags = _tags_input.get()
         if not util.check_tags(tags):
+            self._insert_log("Tags cannot be empty", 'warning')
             return
 
         self.danbooru = Danbooru(tags=tags, filter=self.filter)
