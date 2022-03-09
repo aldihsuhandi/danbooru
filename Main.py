@@ -1,3 +1,5 @@
+import socket
+
 from view.MainPage import MainPage
 
 
@@ -6,3 +8,4 @@ def main():
 
 
 main()
+socket.setdefaulttimeout(10)

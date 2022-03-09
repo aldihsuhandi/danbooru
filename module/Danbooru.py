@@ -1,5 +1,4 @@
-from controller import LinkController as lc
-from module import Util
+from controller import LinkController as lc, Util
 from module.Page import Page
 
 

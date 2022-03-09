@@ -32,3 +32,12 @@ def sanitize_tags(tags):
     tags = tags.rstrip()
     tags = tags.replace(" ", "_")
     return urllib.parse.quote(tags)
+
+
+def wait(jobs):
+    cont = True
+    while cont:
+        cont = False
+        for job in jobs:
+            if job.is_alive():
+                cont = True

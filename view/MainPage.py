@@ -1,7 +1,6 @@
 import tkinter as tk
 
-import module.Util as util
-from controller import Controller
+from controller import Controller, Util
 from module.Danbooru import Danbooru
 from view.Color import Color
 
@@ -131,7 +130,7 @@ class MainPage:
     def _init_danbooru(self, _tags_input):
         tags = _tags_input.get()
         self._clear_log()
-        if not util.check_tags(tags):
+        if not Util.check_tags(tags):
             Controller.insert_log(self.log_box, "Tags cannot be empty", 'warning')
             return
 

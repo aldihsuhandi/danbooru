@@ -1,7 +1,7 @@
 import multiprocessing
 import urllib.parse
 
-from controller import LinkController as lc
+from controller import LinkController as lc, Util
 from module.Url import Url
 
 
@@ -49,11 +49,6 @@ class Page:
             jobs.append(t)
             t.start()
 
-        cont = True
-        while cont:
-            cont = False
-            for job in jobs:
-                if job.is_alive():
-                    cont = True
+        Util.wait(jobs)
 
         return self.image_list

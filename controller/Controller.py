@@ -1,11 +1,15 @@
-import time
+import multiprocessing
 
+from controller import FileController as fc
+from controller import ImageController as ic
 from module.Page import Page
 
 
 def scrap_validate(danbooru, mini, maxi):
     if danbooru is None:
         return False, "Input tags first!"
+    if danbooru.get_max_page() == 0:
+        return False, "Tags doesn't exist"
     elif mini is None or maxi is None:
         return False, "Min page and Max page must be filled"
     elif not mini.isnumeric() or not maxi.isnumeric():
@@ -48,18 +52,31 @@ def scrap_page(danbooru, min_page_field, max_page_field, log_box):
     generate_page(mini, maxi, danbooru, log_box)
 
 
-def _remove_duplicate(image_list, danbooru):
-    pass
+def _remove_duplicate(image_list):
+    image_set = set()
+    for image in image_list:
+        image_set.add(image)
+    return list(image_set)
 
 
 def generate_page(low, high, danbooru, log_box):
     image_list = []
+    insert_log(log_box, "Downloading images...", 'normal')
     for page in range(low, high + 1):
-        load = "Scraping page %d" % page
-        insert_log(log_box, load, 'normal')
-        time.sleep(1)
         link = danbooru.get_page_link(page)
         p = Page(link, danbooru.get_filter())
         image_list.extend(p.scrap_page(danbooru.get_tags()))
 
-    print(image_list)
+    image_list = _remove_duplicate(image_list)
+
+    directory = fc.create_directory(danbooru)
+
+    indx = 1
+    jobs = []
+    for image in image_list:
+        t = multiprocessing.Process(target=ic.download_image, args=(danbooru, indx, image, directory, log_box,))
+        t.start()
+        jobs.append(t)
+        indx += 1
+
+    insert_log(log_box, "Finish", 'normal')
