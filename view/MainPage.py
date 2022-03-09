@@ -1,13 +1,9 @@
 import tkinter as tk
 
 import module.Util as util
+from controller import Controller
 from module.Danbooru import Danbooru
 from view.Color import Color
-
-
-def _change_on_hover(button, bg_hover, fg_hover, bg_leave, fg_leave):
-    button.bind("<Enter>", func=lambda e: button.config(background=bg_hover, foreground=fg_hover))
-    button.bind("<Leave>", func=lambda e: button.config(background=bg_leave, foreground=fg_leave))
 
 
 class MainPage:
@@ -18,7 +14,7 @@ class MainPage:
         self._max_page_field = None
         self._maximal_page_label = None
 
-        self._warning_box = None
+        self.log_box = None
 
         self.danbooru = None
         self.filter = "All"
@@ -39,7 +35,7 @@ class MainPage:
         self._maximal_page()
         self._page_component()
         self._download_button()
-        self._warning_box_init()
+        self.log_box_init()
 
     def _tags_components(self):
         # tags label
@@ -56,7 +52,6 @@ class MainPage:
 
         tags_button = tk.Button(tags_container, text="Search")
         tags_button.configure(bg=Color.GRAY, fg=Color.WHITE, )
-        _change_on_hover(tags_button, Color.BLACK, Color.WHITE, Color.GRAY, Color.WHITE)
         tags_button.grid(column=1, row=0, padx=(10, 0))
 
         tags_container.pack(side="top", anchor="w", padx=25)
@@ -84,6 +79,7 @@ class MainPage:
         self._maximal_page_label.pack(side="top", anchor="w", padx=25, pady=(10, 0))
 
     def _update_max_page(self, max_page):
+        Controller.insert_log(self.log_box, "Found %d page(s)" % max_page, 'normal')
         s = "Maximal page: %d" % max_page
         self._maximal_page_label.configure(text=s)
 
@@ -113,29 +109,30 @@ class MainPage:
         download_btn.configure(borderwidth=5, relief=tk.FLAT)
         download_btn.pack(anchor="e", side="bottom", padx=25, pady=25)
 
-    def _warning_box_init(self):
-        self._warning_box = tk.Text(self.root, pady=5, padx=5)
-        self._warning_box.config(borderwidth=3, relief=tk.FLAT)
-        self._warning_box.config(bg=Color.WHITE, font="Helvetica 14")
-        self._warning_box.config(state="disabled")
-        self._warning_box.pack(side="bottom", anchor="center", padx=25, pady=(10, 15))
+        download_btn.configure(
+            command=lambda: Controller.scrap_page(self.danbooru, self._min_page_field, self._max_page_field,
+                                                  self.log_box))
 
-        self._warning_box.tag_config('warning', foreground=Color.RED)
-        self._warning_box.tag_config('normal', foreground=Color.BLACK)
+    def log_box_init(self):
+        self.log_box = tk.Text(self.root, pady=5, padx=5)
+        self.log_box.config(borderwidth=3, relief=tk.FLAT)
+        self.log_box.config(bg=Color.WHITE, font="Helvetica 14")
+        self.log_box.config(state="disabled")
+        self.log_box.pack(side="bottom", anchor="center", padx=25, pady=(10, 15))
 
-    def _insert_log(self, text, tag):
-        text = "Warning: " + text + '\n'
-        self._warning_box.config(state="normal")
-        self._warning_box.insert('end', text, tag)
-        self._warning_box.config(state="disabled")
+        self.log_box.tag_config('warning', foreground=Color.RED)
+        self.log_box.tag_config('normal', foreground=Color.BLACK)
 
     def _clear_log(self):
-        self._warning_box.delete('1.0', tk.END)
+        self.log_box.config(state="normal")
+        self.log_box.delete('1.0', tk.END)
+        self.log_box.config(state="disabled")
 
     def _init_danbooru(self, _tags_input):
         tags = _tags_input.get()
+        self._clear_log()
         if not util.check_tags(tags):
-            self._insert_log("Tags cannot be empty", 'warning')
+            Controller.insert_log(self.log_box, "Tags cannot be empty", 'warning')
             return
 
         self.danbooru = Danbooru(tags=tags, filter=self.filter)
