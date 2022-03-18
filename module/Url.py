@@ -6,10 +6,13 @@ class Url:
     def __init__(self, url):
         self._url = url
         response = requests.get(url)
-        self._soup = BeautifulSoup(response.content, 'html.parser')
+        self._soup = BeautifulSoup(response.content, 'lxml')
 
     def find_all(self, tags):
         return self._soup.findAll(tags)
+
+    def find_class_all(self, tags, identifier):
+        return self._soup.findAll(tags, class_=identifier)
 
     def find(self, tags):
         return self._soup.find(tags)

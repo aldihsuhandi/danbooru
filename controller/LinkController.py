@@ -8,20 +8,27 @@ def check_link(link, tags):
         return False
     if tags not in link:
         return False
-    if "z" in link:
-        return False
-    if "deleted" in link:
-        return False
-    if "vote" in link:
-        return False
-    if "page" in link:
-        return False
-    if "search" in link:
-        return False
-    if "login" in link:
-        return False
-    if "tags" in link:
-        return False
+    # if "z" in link:
+    #     Debug.filter_link_debug(link, "z in link")
+    #     return False
+    # if "deleted" in link:
+    #     Debug.filter_link_debug(link, "deleted in link")
+    #     return False
+    # if "vote" in link:
+    #     Debug.filter_link_debug(link, "vote in link")
+    #     return False
+    # if "page" in link:
+    #     Debug.filter_link_debug(link, "page in link")
+    #     return False
+    # if "search" in link:
+    #     Debug.filter_link_debug(link, "search in link")
+    #     return False
+    # if "login" in link:
+    #     Debug.filter_link_debug(link, "login in link")
+    #     return False
+    # if "tags" in link:
+    #     Debug.filter_link_debug(link, "tags in link")
+    #     return False
     return True
 
 

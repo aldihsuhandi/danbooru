@@ -24,7 +24,7 @@ class Page:
         return page
 
     def _get_list_image(self, tags):
-        links = self.url.find_all('a')
+        links = self.url.find_class('a', 'post-preview-link')
         res = []
         for link in links:
             if lc.check_link(link['href'], tags):
