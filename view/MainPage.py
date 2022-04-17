@@ -1,5 +1,6 @@
 import tkinter as tk
 
+import controller.Util
 from controller import Controller, Util
 from module.Danbooru import Danbooru
 from view.Color import Color
@@ -78,7 +79,7 @@ class MainPage:
         self._maximal_page_label.pack(side="top", anchor="w", padx=25, pady=(10, 0))
 
     def _update_max_page(self, max_page):
-        Controller.insert_log(self.log_box, "Found %d page(s)" % max_page, 'normal')
+        controller.Util.insert_log(self.log_box, "Found %d page(s)" % max_page, 'normal')
         s = "Maximal page: %d" % max_page
         self._maximal_page_label.configure(text=s)
 
@@ -131,7 +132,7 @@ class MainPage:
         tags = _tags_input.get()
         self._clear_log()
         if not Util.check_tags(tags):
-            Controller.insert_log(self.log_box, "Tags cannot be empty", 'warning')
+            controller.Util.insert_log(self.log_box, "Tags cannot be empty", 'warning')
             return
 
         self.danbooru = Danbooru(tags=tags, filter=self.filter)

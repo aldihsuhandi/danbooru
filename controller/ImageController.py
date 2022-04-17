@@ -1,6 +1,6 @@
 import os
 
-from controller import Controller as c
+import controller.Util
 from module.Image import Image
 
 
@@ -15,4 +15,4 @@ def download_image(danbooru, indx, url, path, log_box):
     image = Image(image_name, url)
     res = image.download(path)
     if not res[0]:
-        c.insert_log(log_box, res[1], 'warning')
+        controller.Util.insert_log(log_box, res[1], 'warning')

@@ -41,3 +41,18 @@ def wait(jobs):
         for job in jobs:
             if job.is_alive():
                 cont = True
+
+
+def wait_finish(jobs, log_box):
+    wait(jobs)
+    insert_log(log_box, "Finish", "normal")
+
+
+def insert_log(log_box, text, tag):
+    if tag == 'warning':
+        text = "Warning: " + text + '\n'
+    else:
+        text = "Info: " + text + '\n'
+    log_box.config(state="normal")
+    log_box.insert('end', text, tag)
+    log_box.config(state="disabled")

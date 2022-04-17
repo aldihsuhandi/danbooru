@@ -1,5 +1,6 @@
 import multiprocessing
 
+import controller.Util as util
 from controller import FileController as fc
 from controller import ImageController as ic
 from module.Page import Page
@@ -26,16 +27,6 @@ def scrap_validate(danbooru, mini, maxi):
     return True, "Success"
 
 
-def insert_log(log_box, text, tag):
-    if tag == 'warning':
-        text = "Warning: " + text + '\n'
-    else:
-        text = "Info: " + text + '\n'
-    log_box.config(state="normal")
-    log_box.insert('end', text, tag)
-    log_box.config(state="disabled")
-
-
 def scrap_page(danbooru, min_page_field, max_page_field, log_box):
     mini = min_page_field.get()
     maxi = max_page_field.get()
@@ -43,7 +34,7 @@ def scrap_page(danbooru, min_page_field, max_page_field, log_box):
     res = scrap_validate(danbooru, mini, maxi)
 
     if not res[0]:
-        insert_log(log_box, res[1], 'warning')
+        util.insert_log(log_box, res[1], 'warning')
         return
 
     mini = int(mini)
@@ -61,7 +52,7 @@ def _remove_duplicate(image_list):
 
 def generate_page(low, high, danbooru, log_box):
     image_list = []
-    insert_log(log_box, "Downloading images...", 'normal')
+    util.insert_log(log_box, "Downloading images...", 'normal')
     for page in range(low, high + 1):
         link = danbooru.get_page_link(page)
         p = Page(link, danbooru.get_filter())
@@ -79,4 +70,7 @@ def generate_page(low, high, danbooru, log_box):
         jobs.append(t)
         indx += 1
 
-    insert_log(log_box, "Finish", 'normal')
+    # printing finish text
+    t = multiprocessing.Process(target=util.wait_finish, args=(jobs, log_box,))
+    t.start()
+    t.join()
