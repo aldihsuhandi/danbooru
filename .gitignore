@@ -2,4 +2,4 @@ image/
 .idea/
 .vscode/
 *.pyc
-__pychache__/
+*/__pychache__/
